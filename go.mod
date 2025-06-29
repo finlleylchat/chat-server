@@ -1,4 +1,4 @@
-module github.com/finlleyl/chat-server
+module github.com/finlleylchat/chat-server
 
 go 1.23
 

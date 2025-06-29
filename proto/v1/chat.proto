@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/finlleyl/chat-server/proto/v1";
+option go_package = "github.com/finlleylchat/chat-server/proto/v1";
 
 service ChatService {
     rpc Create(CreateRequest) returns (CreateResponse);
