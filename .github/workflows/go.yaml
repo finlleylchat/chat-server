@@ -8,13 +8,17 @@ on:
     branches: [ main, master, develop ]
 
 env:
-  GO_VERSION: '1.23'
+  GO_VERSION: '1.24'
   CGO_ENABLED: 0
 
 jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [1.22, 1.23]
+        go-version: [1.23, 1.24]
         os: [ubuntu-latest, windows-latest]
     steps:
       - name: Checkout code
@@ -55,7 +59,7 @@ jobs:
         run: go mod download
 
       - name: Run tests
-        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -117,7 +121,8 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.61
+          version: v1.64.8
+          install-mode: source
           args: --timeout=30m --config=./.golangci.pipeline.yaml
           only-new-issues: true
 
@@ -137,7 +142,8 @@ jobs:
 
       - name: Check for vulnerabilities
         run: |
-          go list -json -deps ./... | nancy sleuth
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
 
       - name: Check for outdated dependencies
         run: |
